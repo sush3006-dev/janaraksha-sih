@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Sidebar from "@/components/dashboard/Sidebar";
 
@@ -10,18 +11,32 @@ export default async function AuthorityPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return <p>You must be logged in.</p>;
+    redirect("/auth/login");
   }
 
   const { data: profile, error: profileError } =
     await supabase
       .from("profiles")
-      .select("full_name")
+      .select("full_name, role")
       .eq("id", user.id)
       .single();
 
-  if (profileError) {
+  if (profileError || !profile) {
     console.error("Profile fetch error:", profileError);
+    redirect("/auth/login");
+  }
+
+  // 🔐 Authority-only access
+  if (profile.role !== "AUTHORITY") {
+    if (profile.role === "USER") {
+      redirect("/user");
+    }
+
+    if (profile.role === "SUPER_ADMIN") {
+      redirect("/admin");
+    }
+
+    redirect("/auth/login");
   }
 
   const { data: complaints, error: complaintsError } =
@@ -92,7 +107,7 @@ export default async function AuthorityPage() {
             <h1>Welcome</h1>
 
             <p className="authority-name">
-              {profile?.full_name ||
+              {profile.full_name ||
                 "Authority Officer"}
             </p>
 
