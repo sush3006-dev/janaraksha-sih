@@ -29,9 +29,7 @@ export default function EvidenceViewer({
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        setError(
-          data.error || "Unable to open evidence."
-        );
+        setError(data.error || "Unable to open evidence.");
         return;
       }
 
@@ -43,30 +41,21 @@ export default function EvidenceViewer({
     }
   }
 
-  const normalizedType =
-    fileType?.toLowerCase() || "";
+  const normalizedType = fileType?.toLowerCase() || "";
 
-  const isImage =
-    normalizedType.startsWith("image/");
-
-  const isVideo =
-    normalizedType.startsWith("video/");
-
-  const isAudio =
-    normalizedType.startsWith("audio/");
-
-  const isPdf =
-    normalizedType === "application/pdf";
+  const isImage = normalizedType.startsWith("image/");
+  const isVideo = normalizedType.startsWith("video/");
+  const isAudio = normalizedType.startsWith("audio/");
+  const isPdf = normalizedType === "application/pdf";
 
   return (
     <div className="evidence-viewer">
+      {/* Evidence file card */}
       <div className="authority-evidence-card">
         <div>
           <strong>{fileName}</strong>
 
-          <p>
-            {fileType || "Unknown file type"}
-          </p>
+          <p>{fileType || "Unknown file type"}</p>
         </div>
 
         {!url && (
@@ -76,77 +65,94 @@ export default function EvidenceViewer({
             onClick={handleView}
             disabled={loading}
           >
-            {loading
-              ? "Opening..."
-              : "View Evidence"}
+            {loading ? "Opening..." : "View Evidence"}
           </button>
         )}
       </div>
 
+      {/* Error */}
       {error && (
         <p className="evidence-viewer-error">
           {error}
         </p>
       )}
 
+      {/* Large Evidence Viewer */}
       {url && (
         <div className="evidence-preview">
           <div className="evidence-preview-header">
-            <strong>{fileName}</strong>
+            <div>
+              <span className="evidence-preview-label">
+                EVIDENCE PREVIEW
+              </span>
+
+              <strong>{fileName}</strong>
+            </div>
 
             <button
               type="button"
-              className="secondary-button"
+              className="evidence-close-button"
               onClick={() => setUrl("")}
             >
-              Close
+              ✕ Close
             </button>
           </div>
 
+          {/* Image */}
           {isImage && (
-            <img
-              src={url}
-              alt={fileName}
-              className="evidence-image-preview"
-            />
+            <div className="evidence-media-container">
+              <img
+                src={url}
+                alt={fileName}
+                className="evidence-image-preview"
+              />
+            </div>
           )}
 
+          {/* Video */}
           {isVideo && (
-            <video
-              src={url}
-              controls
-              className="evidence-video-preview"
-            />
+            <div className="evidence-media-container">
+              <video
+                src={url}
+                controls
+                className="evidence-video-preview"
+              />
+            </div>
           )}
 
+          {/* Audio */}
           {isAudio && (
-            <audio
-              src={url}
-              controls
-              className="evidence-audio-preview"
-            />
+            <div className="evidence-audio-container">
+              <audio
+                src={url}
+                controls
+                className="evidence-audio-preview"
+              />
+            </div>
           )}
 
+          {/* PDF */}
           {isPdf && (
-            <iframe
-              src={`${url}#toolbar=0`}
-              title={fileName}
-              className="evidence-pdf-preview"
-            />
+            <div className="evidence-pdf-container">
+              <iframe
+                src={`${url}#toolbar=0`}
+                title={fileName}
+                className="evidence-pdf-preview"
+              />
+            </div>
           )}
 
+          {/* Unsupported */}
           {!isImage &&
             !isVideo &&
             !isAudio &&
             !isPdf && (
               <div className="evidence-preview-unavailable">
-                <strong>
-                  Preview unavailable
-                </strong>
+                <strong>Preview unavailable</strong>
 
                 <p>
-                  This file type cannot be
-                  previewed in the browser.
+                  This file type cannot be previewed in
+                  the browser.
                 </p>
               </div>
             )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 type DashboardHeaderProps = {
@@ -60,7 +61,11 @@ export default function DashboardHeader({
         <p className="header-description">{description}</p>
       </div>
 
-      <div className="profile-badge">
+      <Link
+        href="/user/profile"
+        className="profile-badge"
+        aria-label="Open profile"
+      >
         <div className="profile-avatar">
           {initial}
         </div>
@@ -69,10 +74,12 @@ export default function DashboardHeader({
           <strong>{name}</strong>
 
           <span>
-            {profile?.role === "USER" ? "Citizen" : profile?.role}
+            {profile?.role === "USER"
+              ? "Citizen"
+              : profile?.role}
           </span>
         </div>
-      </div>
+      </Link>
     </header>
   );
 }

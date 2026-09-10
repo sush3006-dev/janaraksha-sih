@@ -59,18 +59,16 @@ export default async function ComplaintDetailsPage({
   const { data: evidence, error: evidenceError } =
     await supabase
       .from("complaint_evidence")
-      .select(
-        `
-          id,
-          complaint_id,
-          file_name,
-          file_size,
-          file_type,
-          evidence_type,
-          storage_path,
-          uploaded_at
-        `
-      )
+      .select(`
+        id,
+        complaint_id,
+        file_name,
+        file_size,
+        file_type,
+        evidence_type,
+        storage_path,
+        uploaded_at
+      `)
       .eq("complaint_id", id)
       .order("uploaded_at", { ascending: true });
 
@@ -81,99 +79,126 @@ export default async function ComplaintDetailsPage({
     );
   }
 
+  const submittedDate = new Date(
+    complaint.created_at
+  ).toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
   return (
     <main className="dashboard">
       <Sidebar activeItem="Complaints" />
 
-      <div className="dashboard-content">
+      <div className="dashboard-content authority-case-page">
 
-        {/* Header */}
-        <div className="complaint-details-header">
+        {/* ───────────── TOP HEADER ───────────── */}
+        <header className="case-page-header">
           <div>
             <Link
               href="/authority/complaints"
-              className="back-link"
+              className="case-back-link"
             >
               ← Back to Complaints
             </Link>
 
-            <p className="authority-complaint-number">
-              {complaint.complaint_number}
-            </p>
+            <div className="case-heading-row">
+              <div>
+                <p className="case-eyebrow">
+                  Complaint Case
+                </p>
 
-            <h1>Complaint Details</h1>
+                <h1>Complaint Details</h1>
+
+                <p className="case-number">
+                  {complaint.complaint_number}
+                </p>
+              </div>
+
+              <div className="case-status-group">
+                <span
+                  className={`case-status-badge status-${complaint.status.toLowerCase()}`}
+                >
+                  <span className="case-status-dot" />
+                  {complaint.status}
+                </span>
+
+                <span
+                  className={`case-priority-badge priority-${complaint.priority.toLowerCase()}`}
+                >
+                  {complaint.priority} Priority
+                </span>
+              </div>
+            </div>
           </div>
+        </header>
 
-          <span
-            className={`authority-status-badge status-${complaint.status.toLowerCase()}`}
-          >
-            {complaint.status}
-          </span>
-        </div>
+        {/* ───────────── CASE SUMMARY ───────────── */}
+        <section className="case-summary-card">
 
-        {/* Basic Information */}
-        <section className="complaint-details-card">
-          <div className="complaint-details-card-header">
+          <div className="case-summary-top">
             <div>
-              <p className="authority-section-eyebrow">
-                Complaint Information
+              <p className="case-section-label">
+                CASE SUMMARY
               </p>
 
-              <h2>Basic Information</h2>
+              <h2>
+                {complaint.category}
+              </h2>
             </div>
 
-            <span className="complaint-priority">
-              Priority: {complaint.priority}
-            </span>
+            <div className="case-submitted">
+              <span>Submitted</span>
+              <strong>{submittedDate}</strong>
+            </div>
           </div>
 
-          <div className="complaint-details-grid">
-            <div className="complaint-detail-field">
-              <span>Complaint Number</span>
+          <div className="case-summary-grid">
 
-              <strong>
-                {complaint.complaint_number}
-              </strong>
+            <div className="case-summary-item">
+              <span>Complaint Number</span>
+              <strong>{complaint.complaint_number}</strong>
             </div>
 
-            <div className="complaint-detail-field">
+            <div className="case-summary-item">
               <span>Category</span>
-
               <strong>{complaint.category}</strong>
             </div>
 
-            <div className="complaint-detail-field">
+            <div className="case-summary-item">
               <span>Status</span>
-
               <strong>{complaint.status}</strong>
             </div>
 
-            <div className="complaint-detail-field">
+            <div className="case-summary-item">
               <span>Priority</span>
-
               <strong>{complaint.priority}</strong>
             </div>
 
-            <div className="complaint-detail-field">
-              <span>Submitted On</span>
-
-              <strong>
-                {new Date(
-                  complaint.created_at
-                ).toLocaleString()}
-              </strong>
-            </div>
           </div>
 
-          <div className="complaint-detail-description">
+          <div className="case-description-box">
             <span>Complaint Description</span>
-
             <p>{complaint.description}</p>
           </div>
 
-          {/* Assignment Action */}
+          {/* Assignment */}
           {complaint.status === "SUBMITTED" && (
-            <div className="complaint-assignment-action">
+            <div className="case-action-panel">
+              <div>
+                <p className="case-action-title">
+                  Ready for Assignment
+                </p>
+
+                <p className="case-action-text">
+                  Assign this complaint to yourself to
+                  begin reviewing the case.
+                </p>
+              </div>
+
               <AssignComplaintButton
                 complaintId={complaint.id}
               />
@@ -181,37 +206,60 @@ export default async function ComplaintDetailsPage({
           )}
 
           {complaint.status === "ASSIGNED" && (
-            <div className="complaint-assigned-message">
-              This complaint has been assigned and is now under review.
+            <div className="case-assigned-panel">
+              <span className="case-assigned-icon">
+                ✓
+              </span>
+
+              <div>
+                <strong>
+                  Complaint Assigned
+                </strong>
+
+                <p>
+                  This complaint is currently under
+                  authority review.
+                </p>
+              </div>
             </div>
           )}
+
         </section>
 
-        {/* Incident Details */}
-        <section className="complaint-details-card">
-          <div className="complaint-details-card-header">
+        {/* ───────────── INCIDENT ───────────── */}
+        <section className="case-card">
+
+          <div className="case-card-header">
+            <div className="case-card-icon">
+              ⚠
+            </div>
+
             <div>
-              <p className="authority-section-eyebrow">
-                Incident
+              <p className="case-section-label">
+                INCIDENT
               </p>
 
               <h2>Incident Details</h2>
+
+              <p>
+                Information provided by the citizen
+                about the incident.
+              </p>
             </div>
           </div>
 
-          <div className="complaint-details-grid">
-            <div className="complaint-detail-field">
-              <span>Incident Date</span>
+          <div className="case-info-grid">
 
+            <div className="case-info-item">
+              <span>Incident Date</span>
               <strong>
                 {complaint.incident_date ||
                   "Not provided"}
               </strong>
             </div>
 
-            <div className="complaint-detail-field">
+            <div className="case-info-item">
               <span>Incident Time</span>
-
               <strong>
                 {complaint.time_not_known
                   ? "Time not known"
@@ -220,37 +268,43 @@ export default async function ComplaintDetailsPage({
               </strong>
             </div>
 
-            <div className="complaint-detail-field">
+            <div className="case-info-item">
               <span>Frequency</span>
-
               <strong>
                 {complaint.frequency ||
                   "Not provided"}
               </strong>
             </div>
 
-            <div className="complaint-detail-field">
+            <div className="case-info-item">
               <span>Immediate Danger</span>
 
-              <strong>
+              <strong
+                className={
+                  complaint.immediate_danger
+                    ? "danger-yes"
+                    : "danger-no"
+                }
+              >
                 {complaint.immediate_danger
                   ? "Yes"
                   : "No"}
               </strong>
             </div>
 
-            <div className="complaint-detail-field">
-              <span>Incident Methods</span>
+          </div>
 
-              <strong>
-                {complaint.incident_methods ||
-                  "Not provided"}
-              </strong>
-            </div>
+          <div className="case-text-block">
+            <span>Incident Methods</span>
+
+            <p>
+              {complaint.incident_methods ||
+                "Not provided"}
+            </p>
           </div>
 
           {complaint.detailed_description && (
-            <div className="complaint-detail-description">
+            <div className="case-text-block">
               <span>Detailed Description</span>
 
               <p>
@@ -258,31 +312,43 @@ export default async function ComplaintDetailsPage({
               </p>
             </div>
           )}
+
         </section>
 
-        {/* Location */}
-        <section className="complaint-details-card">
-          <div className="complaint-details-card-header">
+        {/* ───────────── LOCATION ───────────── */}
+        <section className="case-card">
+
+          <div className="case-card-header">
+            <div className="case-card-icon">
+              ⌖
+            </div>
+
             <div>
-              <p className="authority-section-eyebrow">
-                Location
+              <p className="case-section-label">
+                LOCATION
               </p>
 
               <h2>Incident Location</h2>
+
+              <p>
+                Location information associated with
+                the reported incident.
+              </p>
             </div>
           </div>
 
-          <div className="complaint-details-grid">
-            <div className="complaint-detail-field complaint-detail-wide">
-              <span>Address</span>
+          <div className="case-location-highlight">
+            <span>Address</span>
 
-              <strong>
-                {complaint.location_address ||
-                  "Not provided"}
-              </strong>
-            </div>
+            <strong>
+              {complaint.location_address ||
+                "Not provided"}
+            </strong>
+          </div>
 
-            <div className="complaint-detail-field">
+          <div className="case-info-grid">
+
+            <div className="case-info-item">
               <span>City / District</span>
 
               <strong>
@@ -291,7 +357,7 @@ export default async function ComplaintDetailsPage({
               </strong>
             </div>
 
-            <div className="complaint-detail-field">
+            <div className="case-info-item">
               <span>Latitude</span>
 
               <strong>
@@ -300,7 +366,7 @@ export default async function ComplaintDetailsPage({
               </strong>
             </div>
 
-            <div className="complaint-detail-field">
+            <div className="case-info-item">
               <span>Longitude</span>
 
               <strong>
@@ -308,53 +374,75 @@ export default async function ComplaintDetailsPage({
                   "Not available"}
               </strong>
             </div>
+
+            <div className="case-info-item">
+              <span>Location Accuracy</span>
+
+              <strong>
+                {complaint.location_accuracy
+                  ? `${complaint.location_accuracy} m`
+                  : "Not available"}
+              </strong>
+            </div>
+
           </div>
+
         </section>
 
-        {/* People Involved */}
-        <section className="complaint-details-card">
-          <div className="complaint-details-card-header">
+        {/* ───────────── PEOPLE ───────────── */}
+        <section className="case-card">
+
+          <div className="case-card-header">
+            <div className="case-card-icon">
+              ◉
+            </div>
+
             <div>
-              <p className="authority-section-eyebrow">
-                People
+              <p className="case-section-label">
+                PEOPLE
               </p>
 
               <h2>People Involved</h2>
+
+              <p>
+                Individuals mentioned in the complaint.
+              </p>
             </div>
           </div>
 
           {people && people.length > 0 ? (
-            <div className="authority-people-list">
+            <div className="case-people-list">
+
               {people.map((person, index) => (
                 <div
                   key={person.id}
-                  className="authority-person-card"
+                  className="case-person-card"
                 >
-                  <div className="authority-person-header">
-                    <h3>Person {index + 1}</h3>
+
+                  <div className="case-person-header">
+                    <div>
+                      <span>
+                        PERSON {index + 1}
+                      </span>
+
+                      <h3>
+                        {person.full_name ||
+                          "Unnamed Person"}
+                      </h3>
+                    </div>
 
                     {person.involved_type && (
-                      <span>
+                      <span className="case-person-type">
                         {person.involved_type}
                       </span>
                     )}
                   </div>
 
-                  <div className="complaint-details-grid">
-                    {person.full_name && (
-                      <div className="complaint-detail-field">
-                        <span>Name</span>
-
-                        <strong>
-                          {person.full_name}
-                        </strong>
-                      </div>
-                    )}
+                  <div className="case-info-grid">
 
                     {person.alias && (
-                      <div className="complaint-detail-field">
+                      <div className="case-info-item">
                         <span>Alias</span>
-
                         <strong>
                           {person.alias}
                         </strong>
@@ -362,9 +450,8 @@ export default async function ComplaintDetailsPage({
                     )}
 
                     {person.contact && (
-                      <div className="complaint-detail-field">
+                      <div className="case-info-item">
                         <span>Contact</span>
-
                         <strong>
                           {person.contact}
                         </strong>
@@ -372,9 +459,8 @@ export default async function ComplaintDetailsPage({
                     )}
 
                     {person.age && (
-                      <div className="complaint-detail-field">
+                      <div className="case-info-item">
                         <span>Age</span>
-
                         <strong>
                           {person.age}
                         </strong>
@@ -382,9 +468,8 @@ export default async function ComplaintDetailsPage({
                     )}
 
                     {person.relationship && (
-                      <div className="complaint-detail-field">
+                      <div className="case-info-item">
                         <span>Relationship</span>
-
                         <strong>
                           {person.relationship}
                         </strong>
@@ -392,9 +477,8 @@ export default async function ComplaintDetailsPage({
                     )}
 
                     {person.known_from && (
-                      <div className="complaint-detail-field">
+                      <div className="case-info-item">
                         <span>Known From</span>
-
                         <strong>
                           {person.known_from}
                         </strong>
@@ -402,63 +486,76 @@ export default async function ComplaintDetailsPage({
                     )}
 
                     {person.position_of_power && (
-                      <div className="complaint-detail-field complaint-detail-wide">
-                        <span>
-                          Position of Power
-                        </span>
-
+                      <div className="case-info-item">
+                        <span>Position of Power</span>
                         <strong>
                           {person.position_of_power}
                         </strong>
                       </div>
                     )}
 
-                    {person.address && (
-                      <div className="complaint-detail-field complaint-detail-wide">
-                        <span>Address</span>
-
-                        <strong>
-                          {person.address}
-                        </strong>
-                      </div>
-                    )}
-
-                    {person.other_information && (
-                      <div className="complaint-detail-description complaint-detail-wide">
-                        <span>
-                          Other Information
-                        </span>
-
-                        <p>
-                          {person.other_information}
-                        </p>
-                      </div>
-                    )}
                   </div>
+
+                  {person.address && (
+                    <div className="case-text-block">
+                      <span>Address</span>
+
+                      <p>{person.address}</p>
+                    </div>
+                  )}
+
+                  {person.other_information && (
+                    <div className="case-text-block">
+                      <span>Other Information</span>
+
+                      <p>
+                        {person.other_information}
+                      </p>
+                    </div>
+                  )}
+
                 </div>
               ))}
+
             </div>
           ) : (
-            <p className="authority-muted-text">
-              No people information was provided.
-            </p>
+            <div className="case-empty-state">
+              <span>○</span>
+
+              <p>
+                No people information was provided
+                with this complaint.
+              </p>
+            </div>
           )}
+
         </section>
 
-        {/* Evidence & Documents */}
-        <section className="complaint-details-card">
-          <div className="complaint-details-card-header">
+        {/* ───────────── EVIDENCE ───────────── */}
+        <section className="case-card">
+
+          <div className="case-card-header">
+            <div className="case-card-icon">
+              ▣
+            </div>
+
             <div>
-              <p className="authority-section-eyebrow">
-                Documents
+              <p className="case-section-label">
+                DOCUMENTS
               </p>
 
               <h2>Evidence & Documents</h2>
+
+              <p>
+                Files and supporting evidence submitted
+                with the complaint.
+              </p>
             </div>
           </div>
 
           {evidence && evidence.length > 0 ? (
-            <div className="authority-evidence-list">
+            <div className="case-evidence-list">
+
               {evidence.map((item) => (
                 <EvidenceViewer
                   key={item.id}
@@ -467,13 +564,21 @@ export default async function ComplaintDetailsPage({
                   fileType={item.file_type}
                 />
               ))}
+
             </div>
           ) : (
-            <p className="authority-muted-text">
-              No evidence was submitted.
-            </p>
+            <div className="case-empty-state">
+              <span>□</span>
+
+              <p>
+                No evidence was submitted with this
+                complaint.
+              </p>
+            </div>
           )}
+
         </section>
+
       </div>
     </main>
   );
