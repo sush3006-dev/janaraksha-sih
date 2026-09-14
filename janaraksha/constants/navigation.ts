@@ -69,3 +69,41 @@ export const authorityNavigation: NavigationItem[] = [
     icon: "profile",
   },
 ];
+
+export const adminNavigation: NavigationItem[] = [
+  {
+    label: "Dashboard",
+    href: "/admin",
+    icon: "dashboard",
+  },
+  {
+    label: "Users",
+    href: "/admin/users",
+    icon: "users",
+  },
+  {
+    label: "Authorities",
+    href: "/admin/authorities",
+    icon: "authority",
+  },
+  {
+    label: "Complaints",
+    href: "/admin/complaints",
+    icon: "complaints",
+  },
+  {
+    label: "Assignments",
+    href: "/admin/assignments",
+    icon: "assigned",
+  },
+  {
+    label: "Settings",
+    href: "/admin/settings",
+    icon: "settings",
+  },
+  {
+    label: "Profile",
+    href: "/admin/profile",
+    icon: "profile",
+  },
+];

@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import {
   userNavigation,
   authorityNavigation,
+  adminNavigation,
 } from "@/constants/navigation";
 
 type SidebarProps = {
@@ -19,11 +20,15 @@ export default function Sidebar({
   const router = useRouter();
   const supabase = createClient();
 
-  const isAuthority = pathname.startsWith("/authority");
+  const isAdmin = pathname.startsWith("/admin");
+  const isAuthority =
+    pathname.startsWith("/authority");
 
-  const navigation = isAuthority
-    ? authorityNavigation
-    : userNavigation;
+  const navigation = isAdmin
+    ? adminNavigation
+    : isAuthority
+      ? authorityNavigation
+      : userNavigation;
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -36,10 +41,13 @@ export default function Sidebar({
     <aside className="sidebar">
       <div className="brand">
         <h2>JanaRaksha</h2>
+
         <span>
-          {isAuthority
-            ? "Authority Portal"
-            : "Citizen Portal"}
+          {isAdmin
+            ? "Admin Portal"
+            : isAuthority
+              ? "Authority Portal"
+              : "Citizen Portal"}
         </span>
       </div>
 
@@ -59,6 +67,7 @@ export default function Sidebar({
             <span
               className={`nav-icon icon-${item.icon}`}
             />
+
             <span>{item.label}</span>
           </Link>
         ))}
