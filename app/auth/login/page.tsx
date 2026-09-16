@@ -11,21 +11,18 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleLogin(
-    event: FormEvent<HTMLFormElement>
-  ) {
+  async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setError("");
 
     if (!email || !password) {
-      setError(
-        "Please enter your email and password."
-      );
+      setError("Please enter your email and password.");
       return;
     }
 
@@ -47,9 +44,7 @@ export default function LoginPage() {
 
     if (!data.user) {
       setLoading(false);
-      setError(
-        "Login failed. User information not found."
-      );
+      setError("Login failed. User information not found.");
       return;
     }
 
@@ -69,11 +64,7 @@ export default function LoginPage() {
         `Profile error: ${profileError.message} (code: ${profileError.code})`
       );
 
-      console.error(
-        "Profile error:",
-        profileError
-      );
-
+      console.error("Profile error:", profileError);
       return;
     }
 
@@ -99,45 +90,22 @@ export default function LoginPage() {
 
   return (
     <main className="auth-login-page">
-
-      {/* =====================================================
-          BACK
-      ===================================================== */}
-
-      <Link
-        href="/"
-        className="auth-back"
-      >
-        <span className="auth-back-arrow">
-          ←
-        </span>
-
+      {/* Back */}
+      <Link href="/" className="auth-back">
+        <span className="auth-back-arrow">←</span>
         <span>Back</span>
       </Link>
 
-
-      {/* =====================================================
-          BACKGROUND ARTWORK
-      ===================================================== */}
-
+      {/* Background Artwork */}
       <div
         className="auth-login-background"
         aria-hidden="true"
       />
 
-
-      {/* =====================================================
-          LOGIN CARD
-      ===================================================== */}
-
+      {/* Login Card */}
       <section className="auth-login-card">
-
-        {/* ===================================================
-            BRAND
-        =================================================== */}
-
+        {/* Brand */}
         <div className="auth-login-brand">
-
           <img
             src="/images/JanaRaksha-logo.svg"
             alt="JanaRaksha"
@@ -145,74 +113,39 @@ export default function LoginPage() {
           />
 
           <div className="auth-login-brand-text">
-
-            <h1>
-              JANARAKSHA
-            </h1>
-
-            <p>
-              JUSTICE. GUIDANCE. PROTECTION.
-            </p>
-
+            <h1>JANARAKSHA</h1>
+            <p>JUSTICE. GUIDANCE. PROTECTION.</p>
           </div>
-
         </div>
 
-
-        {/* ===================================================
-            DECORATIVE DIVIDER
-        =================================================== */}
-
+        {/* Decorative Divider */}
         <div className="auth-login-divider">
-
           <span />
-
           <i />
-
           <span />
-
         </div>
 
-
-        {/* ===================================================
-            HEADING
-        =================================================== */}
-
+        {/* Heading */}
         <div className="auth-login-heading">
-
-          <h2>
-            WELCOME BACK
-          </h2>
+          <h2>WELCOME BACK</h2>
 
           <p>
             Sign in to continue to your
+            <br />
             JanaRaksha account.
           </p>
-
         </div>
 
-
-        {/* ===================================================
-            LOGIN FORM
-        =================================================== */}
-
+        {/* Login Form */}
         <form
           className="auth-login-form"
           onSubmit={handleLogin}
         >
-
-          {/* =================================================
-              EMAIL
-          ================================================= */}
-
+          {/* Email */}
           <div className="auth-field">
-
-            <label htmlFor="email">
-              Email
-            </label>
+            <label htmlFor="email">Email</label>
 
             <div className="auth-input-wrapper">
-
               <svg
                 className="auth-input-icon"
                 viewBox="0 0 24 24"
@@ -244,25 +177,16 @@ export default function LoginPage() {
                 }
                 placeholder="Enter your email"
                 autoComplete="email"
+                required
               />
-
             </div>
-
           </div>
 
-
-          {/* =================================================
-              PASSWORD
-          ================================================= */}
-
+          {/* Password */}
           <div className="auth-field">
-
-            <label htmlFor="password">
-              Password
-            </label>
+            <label htmlFor="password">Password</label>
 
             <div className="auth-input-wrapper">
-
               <svg
                 className="auth-input-icon"
                 viewBox="0 0 24 24"
@@ -296,152 +220,164 @@ export default function LoginPage() {
 
               <input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(event) =>
                   setPassword(event.target.value)
                 }
                 placeholder="Enter your password"
                 autoComplete="current-password"
+                required
               />
 
-              {/* Decorative eye — does not alter authentication functionality */}
-
-              <span
+              {/* Show / Hide Password */}
+              <button
+                type="button"
                 className="auth-password-eye"
-                aria-hidden="true"
+                onClick={() =>
+                  setShowPassword((previous) => !previous)
+                }
+                aria-label={
+                  showPassword
+                    ? "Hide password"
+                    : "Show password"
+                }
+                aria-pressed={showPassword}
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                >
-                  <path
-                    d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                  />
+                {showPassword ? (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
 
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="2.5"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                  />
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="2.5"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
 
-                  <path
-                    d="M4 4l16 16"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </span>
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="2.5"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
 
+                    <path
+                      d="M4 4l16 16"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                )}
+              </button>
             </div>
 
             <div className="auth-forgot-row">
-
               <button
                 type="button"
                 className="auth-forgot"
-                onClick={() => {
+                onClick={() =>
                   setError(
                     "Password reset is not available yet."
-                  );
-                }}
+                  )
+                }
               >
                 Forgot Password?
               </button>
-
             </div>
-
           </div>
 
-
-          {/* =================================================
-              ERROR
-          ================================================= */}
-
+          {/* Error */}
           {error && (
-            <div className="auth-login-error">
+            <div
+              className="auth-login-error"
+              role="alert"
+            >
               {error}
             </div>
           )}
 
+          {/* Loading Message */}
+          {loading && (
+            <div
+              className="auth-login-loading"
+              role="status"
+              aria-live="polite"
+            >
+              <span className="auth-small-spinner" />
+              <span>
+                Checking your credentials. Please wait...
+              </span>
+            </div>
+          )}
 
-          {/* =================================================
-              SIGN IN
-          ================================================= */}
-
+          {/* Submit Button */}
           <button
             type="submit"
             className="auth-login-submit"
             disabled={loading}
+            aria-busy={loading}
           >
-
-            <span>
-              {loading
-                ? "SIGNING IN..."
-                : "SIGN IN"}
-            </span>
-
-            {!loading && (
-              <span className="auth-submit-arrow">
-                →
-              </span>
+            {loading ? (
+              <>
+                <span className="auth-loading-spinner" />
+                <span>VERIFYING...</span>
+              </>
+            ) : (
+              <>
+                <span>SIGN IN</span>
+                <span className="auth-submit-arrow">
+                  →
+                </span>
+              </>
             )}
-
           </button>
 
-
-          {/* =================================================
-              OR
-          ================================================= */}
-
+          {/* OR */}
           <div className="auth-or">
-
             <span />
-
-            <strong>
-              OR
-            </strong>
-
+            <strong>OR</strong>
             <span />
-
           </div>
 
-
-          {/* =================================================
-              REGISTER
-          ================================================= */}
-
+          {/* Register */}
           <div className="auth-register-prompt">
-
-            <p>
-              Don’t have an account?
-            </p>
+            <p>Don’t have an account?</p>
 
             <Link
               href="/auth/register"
               className="auth-register-link"
             >
               Register Now
-
-              <span>
-                →
-              </span>
+              <span>→</span>
             </Link>
-
           </div>
 
-
-          {/* =================================================
-              SECURITY
-          ================================================= */}
-
+          {/* Security */}
           <div className="auth-security">
-
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -463,16 +399,10 @@ export default function LoginPage() {
               />
             </svg>
 
-            <span>
-              Your data is secure with us
-            </span>
-
+            <span>Your data is secure with us</span>
           </div>
-
         </form>
-
       </section>
-
     </main>
   );
 }

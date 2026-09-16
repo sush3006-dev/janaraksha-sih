@@ -13879,3 +13879,916 @@ h6 {
     opacity: 0.14 !important;
   }
 }
+/* =========================================================
+   JANARAKSHA LANDING HEADER - ALWAYS VISIBLE
+   ========================================================= */
+
+.landing-header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+
+  width: 100% !important;
+  z-index: 9999 !important;
+
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border-bottom: 1px solid rgba(126, 36, 50, 0.12);
+}
+
+/* Header ke neeche hero content hide na ho */
+.landing-hero {
+  padding-top: 110px !important;
+}
+
+/* Navbar links se section heading hide na ho */
+section[id] {
+  scroll-margin-top: 110px !important;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+/* =========================================================
+   JANARAKSHA - PROFESSIONAL ANIMATIONS
+   ========================================================= */
+
+/* Scroll reveal initial state */
+.landing-purpose-section,
+.landing-about-section,
+.landing-how-section,
+.landing-faq-section,
+.landing-footer {
+  animation: sectionReveal 0.9s ease both;
+}
+
+/* Hero content animation */
+.landing-hero-copy {
+  animation: heroTextReveal 0.9s ease both;
+}
+
+.landing-hero-visual {
+  animation: heroVisualReveal 1.1s ease both;
+}
+
+/* Purpose cards */
+.landing-purpose-card {
+  animation: cardReveal 0.8s ease both;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.landing-purpose-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 28px rgba(126, 36, 50, 0.10);
+}
+
+/* About and How It Works cards */
+.landing-about-feature,
+.landing-how-card {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.landing-about-feature:hover,
+.landing-how-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 24px rgba(126, 36, 50, 0.08);
+}
+
+/* Buttons */
+.landing-signin,
+.landing-register {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.landing-signin:hover,
+.landing-register:hover {
+  transform: translateY(-2px);
+}
+
+/* Navbar shadow while remaining fixed */
+.landing-header {
+  transition:
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
+}
+
+/* Animations */
+@keyframes sectionReveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroTextReveal {
+  from {
+    opacity: 0;
+    transform: translateX(-35px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes heroVisualReveal {
+  from {
+    opacity: 0;
+    transform: translateX(35px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes cardReveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Accessibility: reduce animation when required */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* Scroll reveal animation */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(45px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-on-scroll.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Cards thoda smooth appear honge */
+.landing-purpose-card,
+.landing-about-feature,
+.landing-how-card {
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease;
+}
+
+/* Mobile par animation halka rahega */
+@media (max-width: 768px) {
+  .reveal-on-scroll {
+    transform: translateY(25px);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on-scroll {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+/* =========================================================
+   FINAL SIGN-IN FIX
+   Desktop compactness + password eye functionality
+========================================================= */
+
+/* Desktop and laptop */
+@media (min-width: 769px) {
+  .auth-login-page {
+    min-height: 100vh;
+    height: 100vh;
+    padding: 18px 24px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .auth-back {
+    align-self: flex-start;
+    margin: 0 0 10px 8px;
+    flex-shrink: 0;
+  }
+
+  .auth-login-card {
+    width: min(690px, calc(100vw - 48px));
+    max-height: calc(100vh - 78px);
+    margin: 0 auto;
+    padding: 28px 48px 24px;
+    overflow-y: auto;
+    flex-shrink: 1;
+  }
+
+  .auth-login-brand {
+    gap: 20px;
+    margin-bottom: 14px;
+  }
+
+  .auth-login-logo {
+    width: 72px;
+    height: 82px;
+  }
+
+  .auth-login-brand-text h1 {
+    font-size: 42px;
+  }
+
+  .auth-login-brand-text p {
+    margin-top: 6px;
+    font-size: 9px;
+  }
+
+  .auth-login-divider {
+    margin: 0 auto 20px;
+  }
+
+  .auth-login-heading {
+    margin-bottom: 22px;
+  }
+
+  .auth-login-heading h2 {
+    font-size: 38px;
+  }
+
+  .auth-login-heading p {
+    margin-top: 9px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .auth-field {
+    margin-bottom: 16px;
+  }
+
+  .auth-field > label {
+    margin-bottom: 7px;
+    font-size: 14px;
+  }
+
+  .auth-input-wrapper input {
+    height: 48px;
+    padding-left: 52px;
+    padding-right: 52px;
+    font-size: 14px;
+  }
+
+  .auth-input-icon {
+    left: 16px;
+    width: 22px;
+    height: 22px;
+  }
+
+  .auth-password-eye {
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    padding: 5px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 10;
+  }
+
+  .auth-password-eye svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .auth-forgot-row {
+    margin-top: 7px;
+  }
+
+  .auth-forgot {
+    font-size: 13px;
+  }
+
+  .auth-login-submit {
+    height: 50px;
+    margin-top: 3px;
+    font-size: 16px;
+    gap: 20px;
+  }
+
+  .auth-submit-arrow {
+    font-size: 25px;
+  }
+
+  .auth-login-loading {
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+
+  .auth-or {
+    margin: 20px 0 16px;
+  }
+
+  .auth-or strong {
+    font-size: 13px;
+  }
+
+  .auth-register-prompt p {
+    font-size: 13px;
+  }
+
+  .auth-register-link {
+    margin-top: 6px;
+    font-size: 15px;
+    gap: 8px;
+  }
+
+  .auth-register-link span {
+    font-size: 21px;
+  }
+
+  .auth-security {
+    margin-top: 18px;
+    padding-top: 13px;
+    gap: 9px;
+    font-size: 12px;
+  }
+
+  .auth-security svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Laptop screens with less vertical space */
+@media (min-width: 769px) and (max-height: 800px) {
+  .auth-login-card {
+    max-height: calc(100vh - 62px);
+    padding: 22px 42px 18px;
+  }
+
+  .auth-back {
+    margin-bottom: 6px;
+  }
+
+  .auth-login-brand {
+    margin-bottom: 9px;
+  }
+
+  .auth-login-logo {
+    width: 58px;
+    height: 66px;
+  }
+
+  .auth-login-brand-text h1 {
+    font-size: 34px;
+  }
+
+  .auth-login-brand-text p {
+    font-size: 8px;
+  }
+
+  .auth-login-divider {
+    margin-bottom: 14px;
+  }
+
+  .auth-login-heading {
+    margin-bottom: 15px;
+  }
+
+  .auth-login-heading h2 {
+    font-size: 32px;
+  }
+
+  .auth-login-heading p {
+    font-size: 12px;
+  }
+
+  .auth-field {
+    margin-bottom: 11px;
+  }
+
+  .auth-field > label {
+    margin-bottom: 5px;
+    font-size: 12px;
+  }
+
+  .auth-input-wrapper input {
+    height: 42px;
+    font-size: 12px;
+  }
+
+  .auth-input-icon {
+    width: 19px;
+    height: 19px;
+    left: 14px;
+  }
+
+  .auth-password-eye {
+    right: 9px;
+    width: 29px;
+    height: 29px;
+  }
+
+  .auth-password-eye svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .auth-forgot {
+    font-size: 11px;
+  }
+
+  .auth-login-submit {
+    height: 43px;
+    font-size: 13px;
+  }
+
+  .auth-or {
+    margin: 14px 0 11px;
+  }
+
+  .auth-register-prompt p {
+    font-size: 11px;
+  }
+
+  .auth-register-link {
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .auth-register-link span {
+    font-size: 18px;
+  }
+
+  .auth-security {
+    margin-top: 12px;
+    padding-top: 9px;
+    font-size: 10px;
+  }
+
+  .auth-security svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Keep mobile design unchanged, only make eye clickable */
+@media (max-width: 768px) {
+  .auth-password-eye {
+    pointer-events: auto;
+    cursor: pointer;
+    z-index: 10;
+  }
+}
+
+/* =====================================================
+   REGISTER PAGE - PASSWORD TOGGLE
+===================================================== */
+
+.auth-register-input-wrapper {
+  position: relative;
+}
+
+.auth-register-input-wrapper input {
+  padding-right: 58px;
+}
+
+.auth-register-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-secondary, #af7268);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: color 0.2s ease;
+}
+
+.auth-register-password-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.auth-register-password-toggle:hover {
+  color: var(--color-primary, #7e2432);
+}
+
+.auth-register-password-toggle:focus-visible {
+  outline: 2px solid var(--color-accent, #e2b761);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* =====================================================
+   REGISTER PAGE - LOADING SPINNER
+===================================================== */
+
+.auth-register-loading-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: auth-register-spin 0.7s linear infinite;
+}
+
+@keyframes auth-register-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =====================================================
+   REGISTER PAGE - COMPACT DESKTOP/LAPTOP LAYOUT
+===================================================== */
+
+@media (min-width: 769px) {
+  .auth-register-page {
+    padding-top: 16px;
+    padding-bottom: 24px;
+  }
+
+  .auth-register-back {
+    margin-bottom: 14px;
+  }
+
+  .auth-register-card {
+    padding-top: 32px;
+    padding-bottom: 26px;
+  }
+
+  .auth-register-brand {
+    margin-bottom: 14px;
+  }
+
+  .auth-register-logo {
+    max-height: 70px;
+  }
+
+  .auth-register-divider {
+    margin-bottom: 18px;
+  }
+
+  .auth-register-heading {
+    margin-bottom: 20px;
+  }
+
+  .auth-register-field {
+    margin-bottom: 12px;
+  }
+
+  .auth-register-field label {
+    margin-bottom: 6px;
+  }
+
+  .auth-register-submit {
+    margin-top: 12px;
+  }
+
+  .auth-register-signin {
+    margin-top: 18px;
+  }
+
+  .auth-register-security {
+    margin-top: 16px;
+  }
+}
+/* FINAL REGISTER DESKTOP COMPACT FIX */
+
+@media (min-width: 769px) {
+  .auth-register-page {
+    min-height: 100vh !important;
+    height: auto !important;
+    padding: 6px 20px 10px !important;
+  }
+
+  .auth-register-back {
+    margin-bottom: 4px !important;
+    line-height: 1 !important;
+  }
+
+  .auth-register-card {
+    width: min(600px, calc(100vw - 40px)) !important;
+    max-width: 600px !important;
+    padding: 18px 32px 14px !important;
+    border-radius: 20px !important;
+  }
+
+  .auth-register-brand {
+    margin-bottom: 4px !important;
+  }
+
+  .auth-register-logo {
+    max-height: 48px !important;
+  }
+
+  .auth-register-brand-text h1 {
+    margin: 0 !important;
+    font-size: 25px !important;
+    line-height: 1 !important;
+  }
+
+  .auth-register-brand-text p {
+    margin: 3px 0 0 !important;
+    font-size: 9px !important;
+  }
+
+  .auth-register-divider {
+    margin: 7px auto 10px !important;
+  }
+
+  .auth-register-heading {
+    margin-bottom: 10px !important;
+  }
+
+  .auth-register-heading h2 {
+    margin: 0 0 3px !important;
+    font-size: 27px !important;
+    line-height: 1.1 !important;
+  }
+
+  .auth-register-heading p {
+    margin: 0 !important;
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+  }
+
+  .auth-register-field {
+    margin-bottom: 7px !important;
+  }
+
+  .auth-register-field label {
+    margin-bottom: 3px !important;
+    font-size: 12px !important;
+  }
+
+  .auth-register-input-wrapper input {
+    height: 42px !important;
+    min-height: 42px !important;
+    font-size: 13px !important;
+  }
+
+  .auth-register-input-icon {
+    width: 17px !important;
+    height: 17px !important;
+  }
+
+  .auth-register-password-toggle {
+    right: 10px !important;
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .auth-register-password-toggle svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .auth-register-error,
+  .auth-register-success {
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
+    padding: 7px 10px !important;
+    font-size: 12px !important;
+  }
+
+  .auth-register-submit {
+    min-height: 43px !important;
+    height: 43px !important;
+    margin-top: 6px !important;
+    font-size: 12px !important;
+  }
+
+  .auth-register-signin {
+    margin-top: 8px !important;
+    gap: 2px !important;
+  }
+
+  .auth-register-signin p,
+  .auth-register-signin-link {
+    font-size: 12px !important;
+  }
+
+  .auth-register-security {
+    margin-top: 7px !important;
+    font-size: 10px !important;
+  }
+
+  .auth-register-security svg {
+    width: 15px !important;
+    height: 15px !important;
+  }
+}
+
+/* =====================================================
+   JANARAKSHA AUTH PAGE ANIMATIONS
+===================================================== */
+
+/* Smooth page entrance */
+.auth-login-page,
+.auth-register-page {
+  animation: auth-page-enter 0.7s ease-out both;
+}
+
+@keyframes auth-page-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Card entrance */
+.auth-login-card,
+.auth-register-card {
+  animation: auth-card-enter 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes auth-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Logo animation */
+.auth-login-logo,
+.auth-register-logo {
+  animation: auth-logo-enter 0.9s ease-out 0.15s both;
+}
+
+@keyframes auth-logo-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.85) rotate(-4deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+/* Heading entrance */
+.auth-login-heading,
+.auth-register-heading {
+  animation: auth-heading-enter 0.7s ease-out 0.25s both;
+}
+
+@keyframes auth-heading-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Input focus animation */
+.auth-login-input-wrapper,
+.auth-register-input-wrapper {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.auth-login-input-wrapper:focus-within,
+.auth-register-input-wrapper:focus-within {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 16px rgba(126, 36, 50, 0.09);
+}
+
+/* Button hover animation */
+.auth-login-submit,
+.auth-register-submit {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.auth-login-submit:hover:not(:disabled),
+.auth-register-submit:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(126, 36, 50, 0.2);
+}
+
+.auth-login-submit:active:not(:disabled),
+.auth-register-submit:active:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+/* Back link animation */
+.auth-login-back,
+.auth-register-back {
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.auth-login-back:hover,
+.auth-register-back:hover {
+  transform: translateX(-4px);
+}
+
+/* Sign-in/register link animation */
+.auth-login-signup-link,
+.auth-register-signin-link {
+  transition:
+    color 0.2s ease,
+    gap 0.2s ease;
+}
+
+.auth-login-signup-link:hover,
+.auth-register-signin-link:hover {
+  color: var(--color-primary, #7e2432);
+}
+
+/* Decorative background movement */
+.auth-login-background,
+.auth-register-background {
+  animation: auth-background-float 16s ease-in-out infinite alternate;
+}
+
+@keyframes auth-background-float {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    transform: translate3d(0, -12px, 0) scale(1.02);
+  }
+}
+
+/* Respect accessibility settings */
+@media (prefers-reduced-motion: reduce) {
+  .auth-login-page,
+  .auth-register-page,
+  .auth-login-card,
+  .auth-register-card,
+  .auth-login-logo,
+  .auth-register-logo,
+  .auth-login-heading,
+  .auth-register-heading,
+  .auth-login-background,
+  .auth-register-background {
+    animation: none !important;
+  }
+
+  .auth-login-input-wrapper,
+  .auth-register-input-wrapper,
+  .auth-login-submit,
+  .auth-register-submit,
+  .auth-login-back,
+  .auth-register-back {
+    transition: none !important;
+  }
+}
