@@ -13601,3 +13601,281 @@ h6 {
     width: 100%;
   }
 }
+/* =========================================================
+   FINAL LANDING PAGE UI FIXES
+   ========================================================= */
+
+/* 1. FOOTER LOGO SMALLER */
+.landing-footer-logo {
+  width: 125px !important;
+  height: auto !important;
+}
+
+
+/* 2. REMOVE VERTICAL LINE FROM HERO BACKGROUND */
+@media screen and (max-width: 768px) {
+  .landing-hero-background {
+    display: block !important;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+
+    width: 58%;
+    height: 100%;
+
+    background-repeat: no-repeat !important;
+    background-position: right bottom !important;
+    background-size: contain !important;
+
+    opacity: 0.18;
+
+    /* Vertical edge dissolve */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.35) 35%,
+      black 75%
+    );
+
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.35) 35%,
+      black 75%
+    );
+
+    pointer-events: none;
+  }
+
+  .landing-hero {
+    position: relative;
+    overflow: hidden;
+  }
+}
+
+.landing-hero-background {
+  opacity: 0.18 !important;
+  background-position: right bottom !important;
+}
+
+
+/* 3. MOBILE SHIELD HIDE */
+@media (max-width: 768px) {
+  .landing-hero-visual {
+    display: none !important;
+  }
+}
+
+
+/* 4. MOBILE RESPONSIVENESS - TWO COLUMNS */
+@media (max-width: 768px) {
+  .landing-purpose-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 24px 12px !important;
+  }
+
+  .landing-about-features {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 20px 12px !important;
+  }
+
+  .landing-how-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 20px 12px !important;
+  }
+
+  .landing-purpose-card,
+  .landing-about-feature,
+  .landing-how-card {
+    min-width: 0;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .landing-purpose-card h2,
+  .landing-about-feature h3,
+  .landing-how-card h3 {
+    font-size: 16px;
+  }
+
+  .landing-purpose-card p,
+  .landing-about-feature p,
+  .landing-how-card p {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+}
+
+
+/* EXTRA SMALL MOBILE SCREEN */
+@media (max-width: 420px) {
+  .landing-footer-logo {
+    width: 110px !important;
+  }
+
+  .landing-purpose-grid,
+  .landing-about-features,
+  .landing-how-grid {
+    gap: 18px 8px !important;
+  }
+
+  .landing-purpose-card h2,
+  .landing-about-feature h3,
+  .landing-how-card h3 {
+    font-size: 14px;
+  }
+
+  .landing-purpose-card p,
+  .landing-about-feature p,
+  .landing-how-card p {
+    font-size: 11px;
+  }
+}
+/* FINAL FIX: Remove hard vertical edge from landing background */
+.landing-hero-background {
+  background-image: url("/images/hero-background.png") !important;
+  background-repeat: no-repeat !important;
+  background-position: right -30px bottom -5px !important;
+  background-size: 980px auto !important;
+
+  /* Smoothly dissolve the left edge */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.15) 18%,
+    black 42%,
+    black 100%
+  );
+
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.15) 18%,
+    black 42%,
+    black 100%
+  );
+}
+
+/* Extra smooth fade over the artwork */
+.landing-hero-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  background: linear-gradient(
+    to right,
+    #faf3f1 0%,
+    rgba(250, 243, 241, 0.85) 18%,
+    rgba(250, 243, 241, 0.35) 40%,
+    rgba(250, 243, 241, 0) 70%
+  );
+}
+
+/* Mobile: hide large architectural artwork */
+@media screen and (max-width: 768px) {
+  .landing-hero-background {
+    display: none !important;
+  }
+}
+/* =========================================================
+   FINAL LANDING HERO BACKGROUND
+   ========================================================= */
+
+.landing-hero-background {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+
+  background-image: url("/images/hero-background.png") !important;
+  background-repeat: no-repeat !important;
+  background-position: right bottom !important;
+  background-size: 900px auto !important;
+
+  opacity: 0.22 !important;
+
+  /* Artwork ka left edge smoothly dissolve hoga */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.2) 20%,
+    black 48%,
+    black 100%
+  ) !important;
+
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.2) 20%,
+    black 48%,
+    black 100%
+  ) !important;
+}
+
+/* Vertical hard line remove */
+.landing-hero-background::after {
+  content: none !important;
+}
+
+/* Mobile par artwork visible rahega */
+@media screen and (max-width: 768px) {
+  .landing-hero-background {
+    display: block !important;
+    background-position: right bottom !important;
+    background-size: 520px auto !important;
+    opacity: 0.14 !important;
+  }
+}
+/* =========================================================
+   HERO BACKGROUND - RESTORE + REMOVE VERTICAL LINE
+   ========================================================= */
+
+.landing-hero-background {
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+
+  background-image: url("/images/hero-background.png") !important;
+  background-repeat: no-repeat !important;
+  background-position: right bottom !important;
+  background-size: 900px auto !important;
+
+  opacity: 0.22 !important;
+
+  /* Left edge smoothly dissolve */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.15) 25%,
+    black 55%,
+    black 100%
+  ) !important;
+
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.15) 25%,
+    black 55%,
+    black 100%
+  ) !important;
+}
+
+/* CSS-generated vertical line remove */
+.landing-hero-background::before,
+.landing-hero-background::after {
+  content: none !important;
+  display: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Mobile background visible */
+@media screen and (max-width: 768px) {
+  .landing-hero-background {
+    display: block !important;
+    background-position: right bottom !important;
+    background-size: 520px auto !important;
+    opacity: 0.14 !important;
+  }
+}
