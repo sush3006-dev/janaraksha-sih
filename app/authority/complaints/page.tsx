@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Sidebar from "@/components/dashboard/Sidebar";
 
@@ -10,9 +11,17 @@ export default async function AuthorityComplaintsPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return <p>You must be logged in.</p>;
+    redirect("/auth/login");
   }
 
+  /*
+   * IMPORTANT:
+   * Fetch only complaints assigned to the currently logged-in authority.
+   *
+   * Example:
+   * Robert can see only complaints where
+   * assigned_authority_id = Robert's user.id.
+   */
   const { data: complaints, error } = await supabase
     .from("complaints")
     .select(
@@ -23,9 +32,11 @@ export default async function AuthorityComplaintsPage() {
         description,
         status,
         priority,
-        created_at
+        created_at,
+        assigned_authority_id
       `
     )
+    .eq("assigned_authority_id", user.id)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -37,7 +48,7 @@ export default async function AuthorityComplaintsPage() {
 
         <div className="dashboard-content">
           <h1>Complaints</h1>
-          <p>Unable to load complaints.</p>
+          <p>Unable to load your assigned complaints.</p>
         </div>
       </main>
     );
@@ -50,10 +61,10 @@ export default async function AuthorityComplaintsPage() {
       <div className="dashboard-content">
         <header className="dashboard-header">
           <div>
-            <h1>Complaints</h1>
+            <h1>My Assigned Complaints</h1>
 
             <p>
-              Review and manage all citizen complaints.
+              Review complaints assigned to you by the administrator.
             </p>
           </div>
         </header>
@@ -109,11 +120,11 @@ export default async function AuthorityComplaintsPage() {
             ))
           ) : (
             <div className="authority-empty-state">
-              <h2>No complaints yet</h2>
+              <h2>No complaints assigned</h2>
 
               <p>
-                Submitted citizen complaints will
-                appear here.
+                Complaints assigned to you by the administrator will appear
+                here.
               </p>
             </div>
           )}

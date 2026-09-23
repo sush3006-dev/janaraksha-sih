@@ -19,7 +19,20 @@ export default function CloseComplaintButton({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleClose() {
+  function openModal() {
+    setError("");
+    setOpen(true);
+  }
+
+  function closeModal() {
+    if (loading) return;
+
+    setOpen(false);
+    setResolution("");
+    setError("");
+  }
+
+  async function handleMarkAsDone() {
     const trimmedResolution = resolution.trim();
 
     if (!trimmedResolution) {
@@ -27,37 +40,86 @@ export default function CloseComplaintButton({
       return;
     }
 
-    setError("");
     setLoading(true);
+    setError("");
 
     try {
-      const { data, error: rpcError } = await supabase.rpc(
-        "close_complaint",
-        {
-          p_complaint_id: complaintId,
-          p_resolution_summary: trimmedResolution,
-        }
-      );
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
 
-      if (rpcError) {
-        throw new Error(rpcError.message);
+      if (userError || !user) {
+        throw new Error("You must be logged in.");
       }
 
-      if (!data?.success) {
-        throw new Error("Unable to close the complaint.");
+      // Step 1: Verify that this complaint is assigned to this Authority
+      const { data: complaint, error: complaintError } = await supabase
+        .from("complaints")
+        .select("id, status, assigned_authority_id")
+        .eq("id", complaintId)
+        .maybeSingle();
+
+      if (complaintError) {
+        throw new Error(complaintError.message);
       }
+
+      if (!complaint) {
+        throw new Error("Complaint was not found.");
+      }
+
+      if (complaint.assigned_authority_id !== user.id) {
+        throw new Error(
+          "This complaint is not assigned to your Authority account.",
+        );
+      }
+
+      if (
+        complaint.status !== "ASSIGNED" &&
+        complaint.status !== "IN_PROGRESS" &&
+        complaint.status !== "REOPENED"
+      ) {
+        throw new Error(
+          `This complaint cannot be marked as done from status ${complaint.status}.`,
+        );
+      }
+
+      // Step 2: Update the complaint
+      const { data: updatedComplaint, error: updateError } = await supabase
+        .from("complaints")
+        .update({
+          status: "DONE",
+          resolution_summary: trimmedResolution,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", complaintId)
+        .eq("assigned_authority_id", user.id)
+        .select("id, status, resolution_summary")
+        .single();
+
+      if (updateError) {
+        console.error("Supabase update error:", updateError);
+        throw new Error(updateError.message);
+      }
+
+      if (!updatedComplaint) {
+        throw new Error(
+          "The complaint was not updated. Check the Supabase RLS policy.",
+        );
+      }
+
+      console.log("Complaint successfully updated:", updatedComplaint);
 
       setOpen(false);
       setResolution("");
-
       router.refresh();
-    } catch (closeError) {
-      console.error("Close complaint error:", closeError);
+    } catch (submitError) {
+      console.error("Mark complaint as done error:", submitError);
 
       setError(
-        closeError instanceof Error
-          ? closeError.message
-          : "Unable to close the complaint."
+        submitError instanceof Error
+          ? submitError.message
+          : "Unable to mark complaint as done.",
       );
     } finally {
       setLoading(false);
@@ -69,12 +131,9 @@ export default function CloseComplaintButton({
       <button
         type="button"
         className="close-complaint-button"
-        onClick={() => {
-          setError("");
-          setOpen(true);
-        }}
+        onClick={openModal}
       >
-        Mark as Resolved
+        Mark as Done
       </button>
 
       {open && (
@@ -83,16 +142,16 @@ export default function CloseComplaintButton({
             <div className="close-complaint-modal-header">
               <div>
                 <p className="close-complaint-eyebrow">
-                  RESOLVE COMPLAINT
+                  COMPLETE COMPLAINT ACTION
                 </p>
 
-                <h2>Mark Complaint as Resolved</h2>
+                <h2>Mark Complaint as Done</h2>
               </div>
 
               <button
                 type="button"
                 className="close-complaint-close"
-                onClick={() => setOpen(false)}
+                onClick={closeModal}
                 disabled={loading}
               >
                 ×
@@ -100,40 +159,35 @@ export default function CloseComplaintButton({
             </div>
 
             <p className="close-complaint-description">
-              Record the action taken or resolution before
-              closing this complaint.
+              Describe the action taken by your authority. The administrator
+              will verify the resolution with the citizen before closing the
+              complaint.
             </p>
 
             <label
               htmlFor="resolution-summary"
               className="close-complaint-label"
             >
-              Resolution Summary
+              Action Taken / Resolution Summary
             </label>
 
             <textarea
               id="resolution-summary"
               value={resolution}
-              onChange={(event) =>
-                setResolution(event.target.value)
-              }
-              placeholder="Describe the action taken and how the complaint was resolved..."
+              onChange={(event) => setResolution(event.target.value)}
+              placeholder="Describe the action taken and the current resolution..."
               rows={6}
               disabled={loading}
               autoFocus
             />
 
-            {error && (
-              <p className="close-complaint-error">
-                {error}
-              </p>
-            )}
+            {error && <p className="close-complaint-error">{error}</p>}
 
             <div className="close-complaint-actions">
               <button
                 type="button"
                 className="close-complaint-cancel"
-                onClick={() => setOpen(false)}
+                onClick={closeModal}
                 disabled={loading}
               >
                 Cancel
@@ -142,10 +196,10 @@ export default function CloseComplaintButton({
               <button
                 type="button"
                 className="close-complaint-confirm"
-                onClick={handleClose}
+                onClick={handleMarkAsDone}
                 disabled={loading || !resolution.trim()}
               >
-                {loading ? "Closing..." : "Mark as Resolved"}
+                {loading ? "Saving..." : "Mark as Done"}
               </button>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import Sidebar from "@/components/dashboard/Sidebar";
 import { createClient } from "@/lib/supabase/server";
 
@@ -10,17 +11,17 @@ export default async function AssignedComplaintsPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return null;
+    redirect("/auth/login");
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("full_name, role")
     .eq("id", user.id)
     .single();
 
-  if (!profile || profile.role !== "AUTHORITY") {
-    return null;
+  if (profileError || !profile || profile.role !== "AUTHORITY") {
+    redirect("/auth/login");
   }
 
   const { data: complaints, error } = await supabase
@@ -61,12 +62,12 @@ export default async function AssignedComplaintsPage() {
         <section className="assigned-summary-card">
           <div>
             <span>ASSIGNED CASES</span>
-            <strong>{complaints?.length || 0}</strong>
+            <strong>{complaints?.length ?? 0}</strong>
           </div>
 
           <p>
-            These complaints have been assigned to your authority
-            account for review.
+            These complaints have been assigned to your authority account for
+            review.
           </p>
         </section>
 
@@ -82,69 +83,63 @@ export default async function AssignedComplaintsPage() {
 
             <h2>No Assigned Complaints</h2>
 
-            <p>
-              Complaints assigned to you will appear here.
-            </p>
+            <p>Complaints assigned to you will appear here.</p>
           </section>
         )}
 
-        {!error &&
-          complaints &&
-          complaints.length > 0 && (
-            <section className="assigned-complaints-list">
-              {complaints.map((complaint) => (
-                <article
-                  key={complaint.id}
-                  className="assigned-complaint-card"
-                >
-                  <div className="assigned-card-top">
-                    <div>
-                      <p className="assigned-complaint-number">
-                        {complaint.complaint_number}
-                      </p>
+        {!error && complaints && complaints.length > 0 && (
+          <section className="assigned-complaints-list">
+            {complaints.map((complaint) => (
+              <article
+                key={complaint.id}
+                className="assigned-complaint-card"
+              >
+                <div className="assigned-card-top">
+                  <div>
+                    <p className="assigned-complaint-number">
+                      {complaint.complaint_number}
+                    </p>
 
-                      <h2>{complaint.category}</h2>
-                    </div>
+                    <h2>{complaint.category}</h2>
+                  </div>
 
-                    <span className="assigned-status-badge">
-                      {complaint.status}
+                  <span className="assigned-status-badge">
+                    {complaint.status}
+                  </span>
+                </div>
+
+                <p className="assigned-description">
+                  {complaint.description}
+                </p>
+
+                <div className="assigned-card-footer">
+                  <div className="assigned-meta">
+                    <span>
+                      Priority:{" "}
+                      <strong>{complaint.priority}</strong>
+                    </span>
+
+                    <span>
+                      Submitted:{" "}
+                      <strong>
+                        {new Date(
+                          complaint.created_at
+                        ).toLocaleDateString("en-IN")}
+                      </strong>
                     </span>
                   </div>
 
-                  <p className="assigned-description">
-                    {complaint.description}
-                  </p>
-
-                  <div className="assigned-card-footer">
-                    <div className="assigned-meta">
-                      <span>
-                        Priority:{" "}
-                        <strong>
-                          {complaint.priority}
-                        </strong>
-                      </span>
-
-                      <span>
-                        Submitted:{" "}
-                        <strong>
-                          {new Date(
-                            complaint.created_at
-                          ).toLocaleDateString("en-IN")}
-                        </strong>
-                      </span>
-                    </div>
-
-                    <Link
-                      href={`/authority/complaints/${complaint.id}`}
-                      className="assigned-view-link"
-                    >
-                      View Details →
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </section>
-          )}
+                  <Link
+                    href={`/authority/complaints/${complaint.id}`}
+                    className="assigned-view-link"
+                  >
+                    View Details →
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </section>
+        )}
       </section>
     </main>
   );

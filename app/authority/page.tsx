@@ -14,19 +14,18 @@ export default async function AuthorityPage() {
     redirect("/auth/login");
   }
 
-  const { data: profile, error: profileError } =
-    await supabase
-      .from("profiles")
-      .select("full_name, role")
-      .eq("id", user.id)
-      .single();
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("full_name, role")
+    .eq("id", user.id)
+    .single();
 
   if (profileError || !profile) {
     console.error("Profile fetch error:", profileError);
     redirect("/auth/login");
   }
 
-  // 🔐 Authority-only access
+  // Authority-only access
   if (profile.role !== "AUTHORITY") {
     if (profile.role === "USER") {
       redirect("/user");
@@ -39,59 +38,66 @@ export default async function AuthorityPage() {
     redirect("/auth/login");
   }
 
-  const { data: complaints, error: complaintsError } =
-    await supabase
-      .from("complaints")
-      .select("status, priority");
+  /*
+   * IMPORTANT SECURITY FILTER:
+   *
+   * Only complaints assigned to the currently logged-in
+   * authority will be fetched.
+   *
+   * Example:
+   * Robert can only see complaints where
+   * assigned_authority_id equals Robert's user.id.
+   */
+  const {
+    data: complaints,
+    error: complaintsError,
+  } = await supabase
+    .from("complaints")
+    .select("status, priority")
+    .eq("assigned_authority_id", user.id);
 
   if (complaintsError) {
-    console.error(
-      "Complaints fetch error:",
-      complaintsError
-    );
+    console.error("Complaints fetch error:", complaintsError);
   }
 
-  const submittedCount =
-    complaints?.filter(
-      (complaint) =>
-        complaint.status === "SUBMITTED"
-    ).length ?? 0;
+  const assignedComplaints = complaints ?? [];
 
-  const assignedCount =
-    complaints?.filter(
-      (complaint) =>
-        complaint.status === "ASSIGNED"
-    ).length ?? 0;
+  const submittedCount = assignedComplaints.filter(
+    (complaint) => complaint.status === "SUBMITTED"
+  ).length;
 
-  const closedCount =
-    complaints?.filter(
-      (complaint) =>
-        complaint.status === "CLOSED"
-    ).length ?? 0;
+  const assignedCount = assignedComplaints.filter(
+    (complaint) =>
+      complaint.status === "ASSIGNED" ||
+      complaint.status === "IN_PROGRESS" ||
+      complaint.status === "REOPENED"
+  ).length;
 
-  const criticalCount =
-    complaints?.filter(
-      (complaint) =>
-        complaint.priority === "CRITICAL"
-    ).length ?? 0;
+  const doneCount = assignedComplaints.filter(
+    (complaint) =>
+      complaint.status === "DONE" ||
+      complaint.status === "UNDER_VERIFICATION"
+  ).length;
 
-  const highCount =
-    complaints?.filter(
-      (complaint) =>
-        complaint.priority === "HIGH"
-    ).length ?? 0;
+  const closedCount = assignedComplaints.filter(
+    (complaint) => complaint.status === "CLOSED"
+  ).length;
 
-  const mediumCount =
-    complaints?.filter(
-      (complaint) =>
-        complaint.priority === "MEDIUM"
-    ).length ?? 0;
+  const criticalCount = assignedComplaints.filter(
+    (complaint) => complaint.priority === "CRITICAL"
+  ).length;
 
-  const lowCount =
-    complaints?.filter(
-      (complaint) =>
-        complaint.priority === "LOW"
-    ).length ?? 0;
+  const highCount = assignedComplaints.filter(
+    (complaint) => complaint.priority === "HIGH"
+  ).length;
+
+  const mediumCount = assignedComplaints.filter(
+    (complaint) => complaint.priority === "MEDIUM"
+  ).length;
+
+  const lowCount = assignedComplaints.filter(
+    (complaint) => complaint.priority === "LOW"
+  ).length;
 
   return (
     <main className="dashboard">
@@ -107,14 +113,12 @@ export default async function AuthorityPage() {
             <h1>Welcome</h1>
 
             <p className="authority-name">
-              {profile.full_name ||
-                "Authority Officer"}
+              {profile.full_name || "Authority Officer"}
             </p>
 
             <p className="authority-description">
-              Review, manage, and monitor citizen
-              complaints from one centralized
-              workspace.
+              Review, manage, and monitor citizen complaints assigned
+              specifically to you.
             </p>
           </div>
 
@@ -125,19 +129,14 @@ export default async function AuthorityPage() {
               aria-label="Notifications"
               title="Notifications"
             >
-              <span className="notification-icon">
-                ♧
-              </span>
+              <span className="notification-icon">♧</span>
             </button>
 
             <Link
               href="/authority/profile"
               className="profile-button"
             >
-              <span className="profile-icon">
-                ●
-              </span>
-
+              <span className="profile-icon">●</span>
               <span>Profile</span>
             </Link>
           </div>
@@ -149,18 +148,16 @@ export default async function AuthorityPage() {
             className="authority-stat-card"
           >
             <span className="authority-stat-label">
-              Complaints
+              New Complaints
             </span>
 
             <strong>{submittedCount}</strong>
 
             <span className="authority-stat-description">
-              Submitted complaints
+              Submitted complaints assigned to you
             </span>
 
-            <span className="authority-card-arrow">
-              →
-            </span>
+            <span className="authority-card-arrow">→</span>
           </Link>
 
           <Link
@@ -174,12 +171,10 @@ export default async function AuthorityPage() {
             <strong>{assignedCount}</strong>
 
             <span className="authority-stat-description">
-              Currently assigned
+              Assigned, in progress, or reopened
             </span>
 
-            <span className="authority-card-arrow">
-              →
-            </span>
+            <span className="authority-card-arrow">→</span>
           </Link>
 
           <Link
@@ -193,12 +188,10 @@ export default async function AuthorityPage() {
             <strong>{closedCount}</strong>
 
             <span className="authority-stat-description">
-              Successfully closed
+              Successfully closed complaints
             </span>
 
-            <span className="authority-card-arrow">
-              →
-            </span>
+            <span className="authority-card-arrow">→</span>
           </Link>
         </section>
 
@@ -217,9 +210,7 @@ export default async function AuthorityPage() {
             <div className="authority-priority-item">
               <span className="priority-indicator priority-critical" />
 
-              <span className="priority-name">
-                Critical
-              </span>
+              <span className="priority-name">Critical</span>
 
               <strong>{criticalCount}</strong>
             </div>
@@ -227,9 +218,7 @@ export default async function AuthorityPage() {
             <div className="authority-priority-item">
               <span className="priority-indicator priority-high" />
 
-              <span className="priority-name">
-                High
-              </span>
+              <span className="priority-name">High</span>
 
               <strong>{highCount}</strong>
             </div>
@@ -237,9 +226,7 @@ export default async function AuthorityPage() {
             <div className="authority-priority-item">
               <span className="priority-indicator priority-medium" />
 
-              <span className="priority-name">
-                Medium
-              </span>
+              <span className="priority-name">Medium</span>
 
               <strong>{mediumCount}</strong>
             </div>
@@ -247,9 +234,7 @@ export default async function AuthorityPage() {
             <div className="authority-priority-item">
               <span className="priority-indicator priority-low" />
 
-              <span className="priority-name">
-                Low
-              </span>
+              <span className="priority-name">Low</span>
 
               <strong>{lowCount}</strong>
             </div>

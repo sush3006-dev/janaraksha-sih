@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import Sidebar from "@/components/dashboard/Sidebar";
@@ -6,10 +7,7 @@ type Complaint = {
   id: string;
   complaint_number: string;
   category: string;
-  description: string;
   status: "SUBMITTED" | "ASSIGNED";
-  priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-  assigned_authority_id: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -60,14 +58,9 @@ export default async function ComplaintTrackPage() {
           <section className="track-error-card">
             <h1>Authentication Required</h1>
 
-            <p>
-              Please sign in to view your complaint status.
-            </p>
+            <p>Please sign in to view your complaint status.</p>
 
-            <Link
-              href="/auth/login"
-              className="primary-button"
-            >
+            <Link href="/auth/login" className="primary-button">
               Sign In
             </Link>
           </section>
@@ -83,10 +76,7 @@ export default async function ComplaintTrackPage() {
         id,
         complaint_number,
         category,
-        description,
         status,
-        priority,
-        assigned_authority_id,
         created_at,
         updated_at
       `
@@ -97,10 +87,7 @@ export default async function ComplaintTrackPage() {
     });
 
   if (error) {
-    console.error(
-      "Complaint track error:",
-      error
-    );
+    console.error("Complaint track error:", error);
 
     return (
       <main className="dashboard">
@@ -111,8 +98,7 @@ export default async function ComplaintTrackPage() {
             <h1>Unable to Load Complaints</h1>
 
             <p>
-              We could not load your complaints right now.
-              Please try again.
+              We could not load your complaints right now. Please try again.
             </p>
           </section>
         </div>
@@ -125,37 +111,27 @@ export default async function ComplaintTrackPage() {
       <Sidebar activeItem="Complaint Track" />
 
       <div className="dashboard-content">
-
         {/* Page Header */}
         <header className="dashboard-header">
           <div>
-            <p className="authority-section-eyebrow">
-              JANARAKSHA
-            </p>
+            <p className="authority-section-eyebrow">JANARAKSHA</p>
 
             <h1>Complaint Track</h1>
 
-            <p>
-              Check the latest status and updates on
-              your complaints.
-            </p>
+            <p>Check the latest status and updates on your complaints.</p>
           </div>
         </header>
 
         {/* Empty State */}
-        {!complaints ||
-        complaints.length === 0 ? (
+        {!complaints || complaints.length === 0 ? (
           <section className="track-empty-state">
-            <div className="track-empty-icon">
-              —
-            </div>
+            <div className="track-empty-icon">—</div>
 
             <h2>No complaints yet</h2>
 
             <p>
-              You have not submitted any complaints.
-              Once you register a complaint, its
-              progress will appear here.
+              You have not submitted any complaints. Once you register a
+              complaint, its progress will appear here.
             </p>
 
             <Link
@@ -168,148 +144,67 @@ export default async function ComplaintTrackPage() {
         ) : (
           <section className="track-complaints-list">
             {complaints.map((complaint) => {
-              const isAssigned =
-                complaint.status === "ASSIGNED";
+              const isAssigned = complaint.status === "ASSIGNED";
 
               return (
                 <article
                   key={complaint.id}
                   className="track-complaint-card"
                 >
-
-                  {/* Complaint Header */}
+                  {/* Complaint ID and Type */}
                   <div className="track-card-header">
                     <div>
                       <span className="track-complaint-number">
                         {complaint.complaint_number}
                       </span>
 
-                      <h2>
-                        {complaint.category}
-                      </h2>
+                      <h2>{complaint.category}</h2>
                     </div>
-
-                    <span
-                      className={`track-status-badge track-status-${complaint.status.toLowerCase()}`}
-                    >
-                      {getStatusLabel(
-                        complaint.status
-                      )}
-                    </span>
-                  </div>
-
-                  {/* Description */}
-                  <p className="track-description">
-                    {complaint.description}
-                  </p>
-
-                  {/* Complaint Information */}
-                  <div className="track-meta-grid">
-
-                    <div className="track-meta-item">
-                      <span>Priority</span>
-
-                      <strong>
-                        {complaint.priority}
-                      </strong>
-                    </div>
-
-                    <div className="track-meta-item">
-                      <span>Submitted</span>
-
-                      <strong>
-                        {formatDate(
-                          complaint.created_at
-                        )}
-                      </strong>
-                    </div>
-
-                    <div className="track-meta-item">
-                      <span>Last Updated</span>
-
-                      <strong>
-                        {formatDate(
-                          complaint.updated_at
-                        )}
-                      </strong>
-                    </div>
-
-                    <div className="track-meta-item">
-                      <span>Assigned Authority</span>
-
-                      <strong>
-                        {complaint.assigned_authority_id
-                          ? "Authority assigned"
-                          : "Not assigned yet"}
-                      </strong>
-                    </div>
-
                   </div>
 
                   {/* Complaint Journey */}
                   <div className="track-journey">
-
                     <div className="track-journey-heading">
                       Complaint Journey
                     </div>
 
                     <div className="track-timeline">
-
-                      {/* Submitted */}
+                      {/* Complaint Submitted */}
                       <div className="track-timeline-item completed">
-
-                        <div className="track-timeline-marker">
-                          ✓
-                        </div>
+                        <div className="track-timeline-marker">✓</div>
 
                         <div className="track-timeline-content">
-                          <strong>
-                            Complaint Submitted
-                          </strong>
+                          <strong>Complaint Submitted</strong>
 
                           <p>
-                            Your complaint was
-                            successfully registered.
+                            Your complaint was successfully registered.
                           </p>
 
                           <span>
-                            {formatDate(
-                              complaint.created_at
-                            )}
+                            {formatDate(complaint.created_at)}
                           </span>
                         </div>
-
                       </div>
 
                       {/* Timeline Connector */}
                       <div
                         className={`track-timeline-line ${
-                          isAssigned
-                            ? "completed"
-                            : ""
+                          isAssigned ? "completed" : ""
                         }`}
                       />
 
-                      {/* Assigned */}
+                      {/* Authority Assigned */}
                       <div
                         className={`track-timeline-item ${
-                          isAssigned
-                            ? "completed"
-                            : "pending"
+                          isAssigned ? "completed" : "pending"
                         }`}
                       >
-
                         <div className="track-timeline-marker">
-                          {isAssigned
-                            ? "✓"
-                            : "2"}
+                          {isAssigned ? "✓" : "2"}
                         </div>
 
                         <div className="track-timeline-content">
-
-                          <strong>
-                            Authority Assigned
-                          </strong>
+                          <strong>Authority Assigned</strong>
 
                           <p>
                             {isAssigned
@@ -320,58 +215,27 @@ export default async function ComplaintTrackPage() {
                           {isAssigned && (
                             <span>
                               Last updated{" "}
-                              {formatDate(
-                                complaint.updated_at
-                              )}
+                              {formatDate(complaint.updated_at)}
                             </span>
                           )}
-
                         </div>
-
                       </div>
-
                     </div>
                   </div>
 
                   {/* Current Status */}
                   <div className="track-current-status">
+                    <span>CURRENT STATUS</span>
 
-                    <span>
-                      CURRENT STATUS
-                    </span>
+                    <h3>{getStatusLabel(complaint.status)}</h3>
 
-                    <h3>
-                      {getStatusLabel(
-                        complaint.status
-                      )}
-                    </h3>
-
-                    <p>
-                      {getStatusDescription(
-                        complaint.status
-                      )}
-                    </p>
-
+                    <p>{getStatusDescription(complaint.status)}</p>
                   </div>
-
-                  {/* Footer */}
-                  <div className="track-card-footer">
-
-                    <span>
-                      Complaint ID:{" "}
-                      <strong>
-                        {complaint.complaint_number}
-                      </strong>
-                    </span>
-
-                  </div>
-
                 </article>
               );
             })}
           </section>
         )}
-
       </div>
     </main>
   );

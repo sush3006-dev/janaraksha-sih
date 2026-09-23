@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import Sidebar from "@/components/dashboard/Sidebar";
 import { createClient } from "@/lib/supabase/server";
 
@@ -10,17 +11,17 @@ export default async function ClosedComplaintsPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return null;
+    redirect("/auth/login");
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("full_name, role")
     .eq("id", user.id)
     .single();
 
-  if (!profile || profile.role !== "AUTHORITY") {
-    return null;
+  if (profileError || !profile || profile.role !== "AUTHORITY") {
+    redirect("/auth/login");
   }
 
   const { data: complaints, error } = await supabase
@@ -55,8 +56,7 @@ export default async function ClosedComplaintsPage() {
             <h1>Closed Complaints</h1>
 
             <p className="header-description">
-              View complaints that have been reviewed and
-              marked as resolved.
+              View complaints that have been reviewed and marked as resolved.
             </p>
           </div>
         </header>
@@ -64,12 +64,11 @@ export default async function ClosedComplaintsPage() {
         <section className="closed-summary-card">
           <div>
             <span>RESOLVED CASES</span>
-            <strong>{complaints?.length || 0}</strong>
+            <strong>{complaints?.length ?? 0}</strong>
           </div>
 
           <p>
-            These complaints have been resolved under your
-            authority account.
+            These complaints have been resolved under your authority account.
           </p>
         </section>
 
@@ -79,90 +78,77 @@ export default async function ClosedComplaintsPage() {
           </div>
         )}
 
-        {!error &&
-          (!complaints || complaints.length === 0) && (
-            <section className="authority-empty-state">
-              <div className="authority-empty-icon">✓</div>
+        {!error && (!complaints || complaints.length === 0) && (
+          <section className="authority-empty-state">
+            <div className="authority-empty-icon">✓</div>
 
-              <h2>No Closed Complaints</h2>
+            <h2>No Closed Complaints</h2>
 
-              <p>
-                Complaints marked as resolved will appear here.
-              </p>
-            </section>
-          )}
+            <p>Complaints marked as resolved will appear here.</p>
+          </section>
+        )}
 
-        {!error &&
-          complaints &&
-          complaints.length > 0 && (
-            <section className="closed-complaints-list">
-              {complaints.map((complaint) => (
-                <article
-                  key={complaint.id}
-                  className="closed-complaint-card"
-                >
-                  <div className="closed-card-top">
-                    <div>
-                      <p className="closed-complaint-number">
-                        {complaint.complaint_number}
-                      </p>
+        {!error && complaints && complaints.length > 0 && (
+          <section className="closed-complaints-list">
+            {complaints.map((complaint) => (
+              <article
+                key={complaint.id}
+                className="closed-complaint-card"
+              >
+                <div className="closed-card-top">
+                  <div>
+                    <p className="closed-complaint-number">
+                      {complaint.complaint_number}
+                    </p>
 
-                      <h2>{complaint.category}</h2>
-                    </div>
+                    <h2>{complaint.category}</h2>
+                  </div>
 
-                    <span className="closed-status-badge">
-                      CLOSED
+                  <span className="closed-status-badge">CLOSED</span>
+                </div>
+
+                <p className="closed-description">
+                  {complaint.description}
+                </p>
+
+                {complaint.resolution_summary && (
+                  <div className="closed-resolution-box">
+                    <span>RESOLUTION</span>
+
+                    <p>{complaint.resolution_summary}</p>
+                  </div>
+                )}
+
+                <div className="closed-card-footer">
+                  <div className="closed-meta">
+                    <span>
+                      Priority:{" "}
+                      <strong>{complaint.priority}</strong>
+                    </span>
+
+                    <span>
+                      Closed:{" "}
+                      <strong>
+                        {complaint.closed_at
+                          ? new Date(
+                              complaint.closed_at
+                            ).toLocaleDateString("en-IN")
+                          : "Not available"}
+                      </strong>
                     </span>
                   </div>
 
-                  <p className="closed-description">
-                    {complaint.description}
-                  </p>
-
-                  {complaint.resolution_summary && (
-                    <div className="closed-resolution-box">
-                      <span>RESOLUTION</span>
-
-                      <p>
-                        {complaint.resolution_summary}
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="closed-card-footer">
-                    <div className="closed-meta">
-                      <span>
-                        Priority:{" "}
-                        <strong>
-                          {complaint.priority}
-                        </strong>
-                      </span>
-
-                      <span>
-                        Closed:{" "}
-                        <strong>
-                          {complaint.closed_at
-                            ? new Date(
-                                complaint.closed_at
-                              ).toLocaleDateString(
-                                "en-IN"
-                              )
-                            : "Not available"}
-                        </strong>
-                      </span>
-                    </div>
-
-                    <Link
-                      href={`/authority/complaints/${complaint.id}`}
-                      className="closed-view-link"
-                    >
-                      View Details →
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </section>
-          )}
+                  <Link
+                    href={`/authority/complaints/${complaint.id}`}
+                    className="closed-view-link"
+                  >
+                    View Details →
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </section>
+        )}
       </section>
     </main>
   );

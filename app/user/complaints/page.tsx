@@ -1,34 +1,52 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+
 import Sidebar from "@/components/dashboard/Sidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+type ComplaintStatus =
+  | "SUBMITTED"
+  | "ASSIGNED"
+  | "IN_PROGRESS"
+  | "DONE"
+  | "UNDER_VERIFICATION"
+  | "REOPENED"
+  | "CLOSED";
 
 type Complaint = {
   id: string;
   complaint_number: string;
   category: string;
   description: string;
-  status: "SUBMITTED" | "ASSIGNED";
+  status: ComplaintStatus;
   priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
   assigned_authority_id: string | null;
   created_at: string;
   updated_at: string;
 };
 
-function getStatusLabel(status: Complaint["status"]) {
-  if (status === "SUBMITTED") {
-    return "Submitted";
-  }
+function getStatusLabel(status: ComplaintStatus) {
+  const statusLabels: Record<ComplaintStatus, string> = {
+    SUBMITTED: "Submitted",
+    ASSIGNED: "Assigned",
+    IN_PROGRESS: "In Progress",
+    DONE: "Resolved by Authority",
+    UNDER_VERIFICATION: "Under Verification",
+    REOPENED: "Reopened",
+    CLOSED: "Closed",
+  };
 
-  if (status === "ASSIGNED") {
-    return "Assigned";
-  }
-
-  return status;
+  return statusLabels[status];
 }
 
 function formatDate(date: string) {
-  return new Date(date).toLocaleString();
+  return new Date(date).toLocaleString("en-IN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
 }
 
 export default async function MyComplaintsPage() {
@@ -52,14 +70,9 @@ export default async function MyComplaintsPage() {
           <section className="track-error-card">
             <h2>Authentication Required</h2>
 
-            <p>
-              Please sign in to view your complaints.
-            </p>
+            <p>Please sign in to view your complaints.</p>
 
-            <Link
-              href="/auth/login"
-              className="primary-button"
-            >
+            <Link href="/auth/login" className="primary-button">
               Sign In
             </Link>
           </section>
@@ -81,7 +94,7 @@ export default async function MyComplaintsPage() {
         assigned_authority_id,
         created_at,
         updated_at
-      `
+      `,
     )
     .eq("user_id", user.id)
     .order("created_at", {
@@ -89,10 +102,7 @@ export default async function MyComplaintsPage() {
     });
 
   if (error) {
-    console.error(
-      "My complaints error:",
-      error
-    );
+    console.error("My complaints error:", error);
 
     return (
       <main className="dashboard">
@@ -108,8 +118,7 @@ export default async function MyComplaintsPage() {
             <h2>Unable to Load Complaints</h2>
 
             <p>
-              We could not load your complaints right now.
-              Please try again.
+              We could not load your complaints right now. Please try again.
             </p>
           </section>
         </section>
@@ -122,7 +131,6 @@ export default async function MyComplaintsPage() {
       <Sidebar activeItem="My Complaints" />
 
       <section className="dashboard-content">
-
         <DashboardHeader
           title="My Complaints"
           description="View and manage your submitted complaints."
@@ -130,33 +138,25 @@ export default async function MyComplaintsPage() {
 
         {complaints && complaints.length > 0 ? (
           <section className="my-complaints-list">
-
-            {complaints.map((complaint) => (
+            {complaints.map((complaint: Complaint) => (
               <article
                 key={complaint.id}
                 className="my-complaint-card"
               >
-
                 <div className="my-complaint-header">
-
                   <div>
                     <span className="my-complaint-number">
                       {complaint.complaint_number}
                     </span>
 
-                    <h2>
-                      {complaint.category}
-                    </h2>
+                    <h2>{complaint.category}</h2>
                   </div>
 
                   <span
                     className={`my-complaint-status my-status-${complaint.status.toLowerCase()}`}
                   >
-                    {getStatusLabel(
-                      complaint.status
-                    )}
+                    {getStatusLabel(complaint.status)}
                   </span>
-
                 </div>
 
                 <p className="my-complaint-description">
@@ -164,81 +164,60 @@ export default async function MyComplaintsPage() {
                 </p>
 
                 <div className="my-complaint-details">
-
                   <div>
                     <span>Priority</span>
-
-                    <strong>
-                      {complaint.priority}
-                    </strong>
+                    <strong>{complaint.priority}</strong>
                   </div>
 
                   <div>
                     <span>Submitted</span>
-
                     <strong>
-                      {formatDate(
-                        complaint.created_at
-                      )}
+                      {formatDate(complaint.created_at)}
                     </strong>
                   </div>
 
                   <div>
                     <span>Last Updated</span>
-
                     <strong>
-                      {formatDate(
-                        complaint.updated_at
-                      )}
+                      {formatDate(complaint.updated_at)}
                     </strong>
                   </div>
 
                   <div>
                     <span>Authority</span>
-
                     <strong>
                       {complaint.assigned_authority_id
                         ? "Assigned"
                         : "Not assigned"}
                     </strong>
                   </div>
-
                 </div>
 
                 <div className="my-complaint-footer">
-
                   <span>
                     Complaint ID:{" "}
-                    <strong>
-                      {complaint.complaint_number}
-                    </strong>
+                    <strong>{complaint.complaint_number}</strong>
                   </span>
 
                   <Link
-                    href="/user/track"
+                    href={`/user/complaints/${complaint.id}`}
                     className="my-complaint-track-link"
                   >
-                    Track Complaint →
+                    View Details →
                   </Link>
-
                 </div>
-
               </article>
             ))}
-
           </section>
         ) : (
           <section className="my-complaints-empty">
-
-            <div className="track-empty-icon">
-              —
-            </div>
+            <div className="track-empty-icon">—</div>
 
             <h2>No complaints yet</h2>
 
             <p>
-              You have not submitted any complaints.
-              Your registered complaints will appear here.
+              You have not submitted any complaints. Your registered
+              complaints will appear here.
             </p>
 
             <Link
@@ -247,10 +226,8 @@ export default async function MyComplaintsPage() {
             >
               Register Your First Complaint
             </Link>
-
           </section>
         )}
-
       </section>
     </main>
   );
