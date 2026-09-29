@@ -112,10 +112,13 @@ export default async function UserDashboard() {
           </div>
 
           <div className="user-dashboard-welcome-mark" aria-hidden="true">
-            <div className="welcome-mark-inner">
-              <CheckCircle2 size={42} strokeWidth={1.5} />
-              <span>JR</span>
-            </div>
+            <div className="...">
+  <img
+    src="/images/JanaRaksha-logo.svg"
+    alt="JanaRaksha"
+    className="dashboard-hero-logo"
+  />
+</div>
           </div>
         </section>
 
